@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  appt_start: 2014-05-30 06:19:41
+  appt_end: 2014-05-30 06:19:41
+  account_id: 1
+  comment: MyText
+
+two:
+  appt_start: 2014-05-30 06:19:41
+  appt_end: 2014-05-30 06:19:41
+  account_id: 1
+  comment: MyText
