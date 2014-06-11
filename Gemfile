@@ -3,8 +3,8 @@ gem 'rails', '4.1.0'
 gem 'rails-api'
 gem 'spring', :group => :development
 gem 'pg'
-gem 'rabl'
 gem "fast_seeder"
+gem 'validates_overlap'
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 

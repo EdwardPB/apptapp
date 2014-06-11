@@ -43,8 +43,6 @@ GEM
     multi_json (1.10.1)
     pg (0.17.1)
     polyglot (0.3.5)
-    rabl (0.10.1)
-      activesupport (>= 2.3.14)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -85,6 +83,8 @@ GEM
       polyglot (>= 0.3.1)
     tzinfo (1.2.0)
       thread_safe (~> 0.1)
+    validates_overlap (0.3.0)
+      validates_overlap
 
 PLATFORMS
   ruby
@@ -92,7 +92,7 @@ PLATFORMS
 DEPENDENCIES
   fast_seeder
   pg
-  rabl
   rails (= 4.1.0)
   rails-api
   spring
+  validates_overlap
