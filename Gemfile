@@ -7,4 +7,4 @@ gem "fast_seeder"
 gem 'validates_overlap'
 gem 'unicorn'
 gem 'active_model_serializers'
-gem 'rails_12factor', group: :production
+gem 'rails_12factor', :group => :production
