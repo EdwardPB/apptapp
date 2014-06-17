@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   namespace :api, defaults: {format: 'json'} do
     namespace :v1 do 
-      resources :appointments, except: [:new,:edit,:show]
+      resources :appointments, only: [:create, :update, :destroy, :index] 
     end
   end  
 end

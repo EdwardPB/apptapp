@@ -1,28 +1,35 @@
 module Api
   module V1 
     class AppointmentsController < ApplicationController
-      ##
-      # List appointments (optionally with time parameters to filter list returned)
-      ##
+#
+#     List appointments (optionally accepts time parameters to filter list returned)
+#
       def index
-        @start = params[:list_from].to_datetime unless params[:list_from].blank?
-        @end = params[:list_to].to_datetime unless params[:list_to].blank?
-
-        if (@start.blank? and @end.blank?)
-          @appointments = Appointment.order(:appt_start).all
-        else
-          @appointments = Appointment.order(:appt_start).where(appt_start: @start..@end)
-        end
-#        
+ 
+        filter_start = params[:list_from].to_datetime unless params[:list_from].blank?
+        filter_end = params[:list_to].to_datetime unless params[:list_to].blank? 
+        
+        @appointments = Appointment.order(:appt_start)
+        
+        if (!filter_start.blank? and !filter_end.blank?)                       #both dates 
+          @appointments = @appointments.where(appt_start: filter_start..filter_end)
+        elsif (!filter_start.blank? and filter_end.blank?)                     #start_only
+           @appointments = @appointments.where('appt_start >= ?', filter_start) 
+        elsif (filter_start.blank? and !filter_end.blank?)                     # end date only
+            @appointments = @appointments.where('appt_start <= ?', filter_end)
+        else (filter_start.blank? and filter_end.blank?)                       #no dates 
+            @appointments = @appointments.all
+        end 
+        
         if !@appointments.blank? 
-          render json: @appointments
+          render json: @appointments, :status => :ok 
         else
-          render json: @appointments, :status => :not_found
+          render :json => {:errors => 'No records found for given criteria'.as_json}, :status => :not_found
         end
       end
-      ##
-      # Create new appt 
-      ##
+#
+#     Create new appt 
+#
       def create
         @appointment = Appointment.new(appt_params)
         if @appointment.save
@@ -31,18 +38,24 @@ module Api
           render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
         end 
       end
-      ##
-      # Update an existing appt
-      ##
+ #
+ #    Update a appt
+ #
       def update
-        @appointment = Appointment.find(params[:id])
-        if @appointment.update(appt_params)
-          render json: @appointment, :status => :accepted
-        else
-          render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
+        begin
+          @appointment = Appointment.find(params[:id])
+          if @appointment.update(appt_params)
+            render json: @appointment, :status => :accepted
+          else
+            render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
+          end
+        rescue ActiveRecord::RecordNotFound
+          return_not_found
         end
       end
-      
+ #
+ #    adios row 
+ #
       def destroy
         begin
           @appointment = Appointment.find(params[:id])
@@ -52,31 +65,25 @@ module Api
             render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
           end
         rescue ActiveRecord::RecordNotFound
-          render :json => [{:errors => 'record with that id not found'.as_json}], :status => :not_found
-#          render :json => {:errors => 'record not found'.as_json}, :status => :unprocessable_entity
-
-    # however you want to respond to it
+          return_not_found
         end
-#        @appointment = Appointment.find(params[:id])
-#        if (!appointment.blank? and @appointment.destroy)
-#          render json: @appointment, :status => :accepted 
-#        else
-#          render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
-#        end
       end
+#
+#     private methods 
+#
       private
+#
+#       Strong Params  
+#
         def appt_params
           params.require(:appointment).permit(:appt_start, :appt_end, :first_name, :last_name, :comment)
-        end  
-        def dates_valid_format
-          begin
-            if !(params[:appt_start].is_a?(Time) or blank?) and !(params[:end_start].is_a?(Time) or blank?)
-              return
-            end
-          rescue ArgumentError
-            render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
-          end 
-        end
+        end 
+#
+#       Common message on find [:id] not founf rescue
+#
+        def return_not_found
+          render :json => {:errors => 'record with that id not found'.as_json}, :status => :not_found
+        end 
     end
   end
 end

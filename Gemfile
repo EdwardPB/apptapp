@@ -5,6 +5,9 @@ gem 'spring', :group => :development
 gem 'pg'
 gem "fast_seeder"
 gem 'validates_overlap'
+gem 'unicorn'
+gem 'active_model_serializers'
+#gem 'validates_timeliness'
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 

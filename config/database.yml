@@ -7,7 +7,7 @@
 development:
   adapter: postgresql
   encoding: unicode
-  database: apptapp_api-dev
+  database: apptapp-dev
   pool: 5
   host: localhost
   username: action
@@ -16,7 +16,7 @@ development:
 test:
   adapter: postgresql
   encoding: unicode
-  database: apptapp_api-test
+  database: apptapp-test
   pool: 5
   host: localhost
   username: action
@@ -25,7 +25,7 @@ test:
 production:
   adapter: postgresql
   encoding: unicode
-  database: apptapp_api-prod
+  database: apptapp
   pool: 5
   host: localhost
   username: action
