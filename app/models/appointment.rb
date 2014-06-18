@@ -9,10 +9,12 @@ class Appointment < ActiveRecord::Base
 #
 # Validate appointment availability (no overlap)
 #
+
   validates :appt_start, :appt_end, :overlap => 
            {:message_title   => "Appt time invalid", 
             :message_content => "overlaps existing appt",
             :exclude_edges   => ["appt_start","appt_end"]}  
+  
   private
 # 
 # insure start end & start date future and < end date 

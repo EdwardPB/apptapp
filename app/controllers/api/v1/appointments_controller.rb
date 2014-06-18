@@ -6,8 +6,8 @@ module Api
 #
       def index
  
-        filter_start = params[:list_from].to_datetime unless params[:list_from].blank?
-        filter_end = params[:list_to].to_datetime unless params[:list_to].blank? 
+        filter_start = Time.zone.parse (params[:list_from]) unless params[:list_from].blank?
+        filter_end   = Time.zone.parse (params[:list_to])   unless params[:list_to].blank? 
         
         @appointments = Appointment.order(:appt_start)
         
@@ -31,7 +31,12 @@ module Api
 #     Create new appt 
 #
       def create
+        
         @appointment = Appointment.new(appt_params)
+        
+        @appointment.appt_start = Time.zone.parse(appt_params[:appt_start])
+        @appointment.appt_end   = Time.zone.parse(appt_params[:appt_end])
+        
         if @appointment.save
           render json: @appointment, :status => :created
         else
@@ -44,6 +49,10 @@ module Api
       def update
         begin
           @appointment = Appointment.find(params[:id])
+
+          @appointment.appt_start = Time.zone.parse(appt_params[:appt_start])  unless appt_params[:appt_start].blank? 
+          @appointment.appt_end = Time.zone.parse(appt_params[:appt_end]) unless appt_params[:appt_end].blank?
+          
           if @appointment.update(appt_params)
             render json: @appointment, :status => :accepted
           else
