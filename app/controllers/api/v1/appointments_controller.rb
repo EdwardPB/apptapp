@@ -14,11 +14,11 @@ module Api
         if (!filter_start.blank? and !filter_end.blank?)                       #both dates 
           @appointments = @appointments.where(appt_start: filter_start..filter_end)
         elsif (!filter_start.blank? and filter_end.blank?)                     #start_only
-           @appointments = @appointments.where('appt_start >= ?', filter_start) 
+          @appointments = @appointments.where('appt_start >= ?', filter_start) 
         elsif (filter_start.blank? and !filter_end.blank?)                     # end date only
-            @appointments = @appointments.where('appt_start <= ?', filter_end)
+          @appointments = @appointments.where('appt_start <= ?', filter_end)
         else (filter_start.blank? and filter_end.blank?)                       #no dates 
-            @appointments = @appointments.all
+          @appointments = @appointments.all
         end 
         
         if !@appointments.blank? 
@@ -50,8 +50,8 @@ module Api
         begin
           @appointment = Appointment.find(params[:id])
 
-          @appointment.appt_start = Time.zone.parse(appt_params[:appt_start])  unless appt_params[:appt_start].blank? 
-          @appointment.appt_end = Time.zone.parse(appt_params[:appt_end]) unless appt_params[:appt_end].blank?
+          @appointment.appt_start = Time.zone.parse(params[:appt_start])  unless (params[:appt_start].blank?)
+          @appointment.appt_end = Time.zone.parse(params[:appt_end]) unless (params[:appt_end].blank?)
           
           if @appointment.update(appt_params)
             render json: @appointment, :status => :accepted
@@ -68,14 +68,15 @@ module Api
       def destroy
         begin
           @appointment = Appointment.find(params[:id])
+
           if @appointment.destroy
             render json: @appointment, :status => :accepted 
           else
             render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
           end
-        rescue ActiveRecord::RecordNotFound
+        rescue
           return_not_found
-        end
+        end 
       end
 #
 #     private methods 
@@ -88,7 +89,7 @@ module Api
           params.require(:appointment).permit(:appt_start, :appt_end, :first_name, :last_name, :comment)
         end 
 #
-#       Common message on find [:id] not founf rescue
+#       Common message on find [:id] not found rescue
 #
         def return_not_found
           render :json => {:errors => 'record with that id not found'.as_json}, :status => :not_found

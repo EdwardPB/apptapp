@@ -1,28 +1,107 @@
-== README
+=Application: apptapp 
+  - Author: Edward P. Brant 
+== Overview
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+* This application was developed using Ruby ruby 2.1.1p76 (2014-02-24 revision 45161) [x86_64-linux] running on Rails 4.1.0.
 
-Things you may want to cover:
+* Development Platform: Nitrous.io
 
-* Ruby version
+* Production Environment:
+  -  Heroku
+  -  Webserver: Unicorn v4.8.3 
 
-* System dependencies
+* Testing was performed using:
+  - Postman with jetpacks to automate API testing.
+  
+* TimeZones Postgres (default UTC)
+* Application (Eastern Time (US & Canada))
+  
+= The following 4 Methods are exposed by apptapp API.
+# - Appropriate status codes are returned with each transaction
 
-* Configuration
+# 1) :index -->  
+#             No Parameters: List All appointments --> http://apptapp.heroku.com/api/v1/appointments
+#             Accepts: optional params: list_from, list_to to filter the list of appointments returned -->  http://apptapp.heroku.com/api/v1/appointments?list_from=2014/11/1 7:00&list_to=2014/11/1 7:05
+#
+#             Returns: JSON array containing appointment data 
+#                      [
+#                        {
+#                            "id": 177,
+#                           "first_name": "Ean",
+#                            "last_name": "Anderson",
+#                            "appt_start": "2014-06-11T08:50:00.000-04:00",    <--- Times are returned in EST with offset to UTC
+#                            "appt_end": "2014-06-11T08:55:00.000-04:00",
+#                            "comment": "validation testing",
+#                            "created_at": "2014-06-18T16:03:33.858-04:00",
+#                            "updated_at": "2014-06-18T16:03:33.858-04:00"
+#                        },
+#                        {
+#                            "id": 176,
+#                            "first_name": "Ean",
+#                            "last_name": "Anderson",
+#                            "appt_start": "2014-06-12T06:50:00.000-04:00",
+#                            "appt_end": "2014-06-12T06:55:00.000-04:00",
+#                            "comment": "validation testing",
+#                            "created_at": "2014-06-18T09:45:17.958-04:00",
+#                            "updated_at": "2014-06-18T09:45:17.958-04:00"
+#                        }, ...
+#                      ]
+#             
+# 2) :create --> Add a new appointment -->  http://apptapp.heroku.com/api/v1/appointments
+#              Accepts: {"appointment":{"appt_start":"2014-6-10 6:50", "appt_end":"2014-6-10 6:55", "first_name":"Ean", "last_name":"Anderson", "comment":"validation testing" }}
+#
+#              Returns: {
+#                          "id": 182,
+#                          "first_name": "Ean",
+#                          "last_name": "Anderson",
+#                          "appt_start": "2014-06-10T08:50:00.000-04:00",     <--- Times are returned in EST with offset to UTC 
+#                          "appt_end": "2014-06-10T08:55:00.000-04:00",
+#                          "comment": "validation testing",
+#                          "created_at": "2014-06-19T14:55:11.242-04:00",
+#                          "updated_at": "2014-06-19T14:55:11.242-04:00"
+#                       }
+#
+# 3) :update --> Update Existing appointment --> http://apptapp-api.heroku.com/api/v1/appointments/4.json      <--- id.json 
+#              Accepts: id.json in url  ... id of record to update
+#                       {"appointment":{"app_start":"2014-06-10 11:10",  <-- appt_start ... optional
+#                                       "appt_end":"2014-06-10 11:15",   <-- appt_end   ... optional
+#                                       "first_name":"Ean",              <-- first_name ... optional
+#                                       "last_name":"Anderson",          <-- last_name  ... optional
+#                                       "comment":"validation testing"}} <-- comment    ... optional
+#
+#              Returns: {
+#                       "id": 4, (Entire appointment row is returned regardless of fields updated)
+#                       "first_name": "Ean",
+#                       "last_name": "Anderson",
+#                       "appt_start": "2014-06-10T11:10:00.000-04:00",     <--- Times are returned in EST with offset to UTC 
+#                       "appt_end": "2014-06-10T11:15:00.000-04:00",
+#                       "comment": "validation testing",
+#                       "created_at": "2014-06-19T14:55:11.242-04:00",
+#                       "updated_at": "2014-06-19T14:55:11.242-04:00"
+#                       }
+#                                
+# 4) :destroy --> Delete Existing appointment --> http://apptapp-api.heroku.com/api/v1/appointments/4.json      <--- id.json
+#             Accepts: id.json in url  ... id of record to delete
+#             Returns: {
+#                       "id": 4, (Entire appointment row is returned regardless of fields updated)
+#                       "first_name": "Ean",
+#                       "last_name": "Anderson",
+#                       "appt_start": "2014-06-10T11:10:00.000-04:00",     <--- Times are returned in EST with offset to UTC 
+#                       "appt_end": "2014-06-10T11:15:00.000-04:00",
+#                       "comment": "validation testing",
+#                       "created_at": "2014-06-19T14:55:11.242-04:00",
+#                       "updated_at": "2014-06-19T14:57:11.242-04:00"
+#                       }
 
-* Database creation
+* Disclaimers/assumptions:
+#  - There is no authentication on this app. (only because they were not called for in the specs)
+#
+#  - This approach does not provide the ability to uniquely identify a customer/patient/account. Please note there were duplicate names and overlapping appointments in the test data presented with the spec. 
+#    Minimally an Account, and Patient table would be needed. 
+#    
+#  - This App returns all data in Application Time Zone format. (Eastern US and Canada).  (Application would need to accept customer time zone, to facilitate multi-time-zone functionality.)
+#    
+#  - All times are displayed based on Military Time (24hr clock) 
+#  
+#  - Appointment list is returned in start_date (asc) sequence. (It should probably accept params to provide the ability to sort on other fields, asc or desc)
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
