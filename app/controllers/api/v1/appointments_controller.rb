@@ -47,36 +47,30 @@ module Api
  #    Update a appt
  #
       def update
-        begin
-          @appointment = Appointment.find(params[:id])
+        @appointment = Appointment.find_by(:id => params[:id])
+        return return_not_found if @appointment.nil?
 
-          @appointment.appt_start = Time.zone.parse(params[:appt_start])  unless (params[:appt_start].blank?)
-          @appointment.appt_end = Time.zone.parse(params[:appt_end]) unless (params[:appt_end].blank?)
-          
-          if @appointment.update(appt_params)
-            render json: @appointment, :status => :accepted
-          else
-            render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
-          end
-        rescue ActiveRecord::RecordNotFound
-          return_not_found
+        @appointment.appt_start = Time.zone.parse(params[:appt_start])  unless (params[:appt_start].blank?)
+        @appointment.appt_end = Time.zone.parse(params[:appt_end]) unless (params[:appt_end].blank?)
+
+        if @appointment.update(appt_params)
+          render json: @appointment, :status => :accepted
+        else
+          render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
         end
       end
  #
  #    adios row 
  #
       def destroy
-        begin
-          @appointment = Appointment.find(params[:id])
+        @appointment = Appointment.find_by(:id => params[:id])
+        return return_not_found if @appointment.nil?
 
-          if @appointment.destroy
-            render json: @appointment, :status => :accepted 
-          else
-            render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
-          end
-        rescue
-          return_not_found
-        end 
+        if @appointment.destroy
+          render json: @appointment, :status => :accepted 
+        else
+          render :json => {:errors => @appointment.errors.as_json}, :status => :unprocessable_entity
+        end
       end
 #
 #     private methods 
